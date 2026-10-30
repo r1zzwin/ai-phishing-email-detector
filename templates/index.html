@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Analyze an email</h1>
+
+{% if not status.running %}
+  <div class="notice warn">
+    Ollama is not running. Analysis will use rules only. Start the Ollama app and refresh this page.
+  </div>
+{% elif not status.model_available %}
+  <div class="notice warn">
+    Ollama is running but model <strong>{{ status.model }}</strong> is not installed.
+    Run: <code>ollama pull {{ status.model }}</code>
+  </div>
+{% else %}
+  <div class="notice ok">Ollama is running. Model: <strong>{{ status.model }}</strong></div>
+{% endif %}
+
+{% if errors %}
+  <div class="notice error" role="alert">
+    <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+{% endif %}
+
+<form id="analyze-form" method="post" action="{{ url_for('main.analyze') }}">
+  <label for="sender">Sender</label>
+  <input id="sender" name="sender" maxlength="254" required
+         placeholder='PayPal Support <help@example.com>' value="{{ form.get('sender', '') }}">
+
+  <label for="subject">Subject</label>
+  <input id="subject" name="subject" maxlength="200" required value="{{ form.get('subject', '') }}">
+
+  <label for="body">Email body</label>
+  <textarea id="body" name="body" rows="10" maxlength="10000" required>{{ form.get('body', '') }}</textarea>
+
+  <button id="submit-btn" type="submit">Analyze email</button>
+  <p id="loading" class="muted" hidden>Analyzing... the first run can take up to a minute.</p>
+</form>
+{% endblock %}

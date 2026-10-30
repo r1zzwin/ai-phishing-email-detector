@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Result - Phishing Email Detector{% endblock %}
+{% block content %}
+<h1>Analysis result</h1>
+
+<div class="notice warn">
+  <strong>Advisory only.</strong> This result is not a guarantee. Legitimate emails can be flagged
+  and phishing emails can be missed.
+</div>
+
+<section class="card">
+  <p><strong>Sender:</strong> {{ email.sender }}</p>
+  <p><strong>Subject:</strong> {{ email.subject }}</p>
+</section>
+
+<section class="card score {{ result.score.category|lower }}">
+  <div class="score-number">{{ result.score.score }}<span>/100</span></div>
+  <div>
+    <div class="label">Risk score</div>
+    <div class="category">{{ result.score.category }}</div>
+    {% if result.ai %}
+      <div class="muted">AI verdict: {{ result.ai.verdict }}
+        (model confidence {{ (result.ai.confidence * 100)|round|int }}%)</div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h2>How the score was calculated</h2>
+  <p>{{ result.score.explanation }}</p>
+  {% if result.ai_error %}
+    <p class="notice warn">AI step unavailable: {{ result.ai_error }}</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Rule-based indicators</h2>
+  {% if result.rules.findings %}
+    <ul>
+      {% for f in result.rules.findings %}
+        <li><strong>{{ f.name }}</strong> (+{{ f.points }})<br>
+            <span class="muted">Evidence: {{ f.evidence }}</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No rule-based warning signs were found.</p>
+  {% endif %}
+</section>
+
+{% if result.ai %}
+<section class="card">
+  <h2>AI findings</h2>
+  {% if result.ai.reasons %}
+    <h3>Reasons</h3>
+    <ul>{% for r in result.ai.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if result.ai.evidence %}
+    <h3>Evidence from the email</h3>
+    <ul>{% for e in result.ai.evidence %}<li>{{ e }}</li>{% endfor %}</ul>
+  {% endif %}
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Safe next steps</h2>
+  <ul>
+    {% if result.ai and result.ai.next_steps %}
+      {% for s in result.ai.next_steps %}<li>{{ s }}</li>{% endfor %}
+    {% endif %}
+    <li>Do not click links or open attachments in this email.</li>
+    <li>Do not reply or share passwords, OTPs or card details.</li>
+    <li>Contact the sender through an official website or phone number you already trust.</li>
+    <li>Report the email to your IT team or email provider.</li>
+  </ul>
+</section>
+
+<p><a class="button" href="{{ url_for('main.index') }}">Analyze another email</a></p>
+{% endblock %}

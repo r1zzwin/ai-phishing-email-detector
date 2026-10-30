@@ -1,0 +1,38 @@
+:root {
+  --bg: #f5f7fa; --card: #ffffff; --text: #1a2230; --muted: #4a5568;
+  --brand: #1d4ed8; --border: #d5dbe5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, Arial, sans-serif; background: var(--bg);
+       color: var(--text); line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.topbar { background: var(--brand); padding: 14px 0; }
+.brand { color: #fff; font-weight: 700; text-decoration: none; font-size: 1.1rem; }
+h1 { margin: 24px 0 12px; }
+label { display: block; font-weight: 600; margin: 14px 0 4px; }
+input, textarea { width: 100%; padding: 10px; border: 1px solid var(--border);
+                  border-radius: 6px; font: inherit; }
+input:focus, textarea:focus, button:focus, a:focus { outline: 3px solid #93b4ff; }
+button, .button { display: inline-block; margin-top: 16px; padding: 10px 18px;
+                  background: var(--brand); color: #fff; border: 0; border-radius: 6px;
+                  font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; }
+button:disabled { opacity: .6; cursor: wait; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+        padding: 14px 18px; margin: 14px 0; }
+.card h2 { margin-top: 0; font-size: 1.1rem; }
+.notice { padding: 10px 14px; border-radius: 6px; margin: 12px 0; border: 1px solid; }
+.notice.ok { background: #e7f6ec; border-color: #9ad4ad; color: #14532d; }
+.notice.warn { background: #fff4d6; border-color: #e6c36a; color: #5c4200; }
+.notice.error { background: #fde8e8; border-color: #e49a9a; color: #7a1212; }
+.muted { color: var(--muted); }
+.score { display: flex; gap: 20px; align-items: center; border-left-width: 8px; }
+.score-number { font-size: 3rem; font-weight: 800; }
+.score-number span { font-size: 1rem; font-weight: 400; color: var(--muted); }
+.score .label { color: var(--muted); font-size: .85rem; text-transform: uppercase; }
+.score .category { font-size: 1.5rem; font-weight: 700; }
+.score.low { border-left-color: #15803d; }
+.score.medium { border-left-color: #b45309; }
+.score.high { border-left-color: #c2410c; }
+.score.critical { border-left-color: #b91c1c; }
+.footer { color: var(--muted); font-size: .85rem; padding: 24px 16px; }
+code { background: #eef1f6; padding: 2px 5px; border-radius: 4px; }
