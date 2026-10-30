@@ -5,17 +5,15 @@ from app.scoring import calculate_score
 
 
 @pytest.fixture
-def client(monkeypatch):
+def client(monkeypatch, tmp_path):
     monkeypatch.setattr(
         ollama_client,
         "check_status",
         lambda: {"running": True, "model": "llama3.2:3b",
                  "model_available": True, "models": []},
     )
-    app = create_app()
-    app.config["TESTING"] = True
+    app = create_app({"TESTING": True, "DATABASE": str(tmp_path / "test.db")})
     return app.test_client()
-
 
 def fake_analyze(sender, subject, body):
     return {

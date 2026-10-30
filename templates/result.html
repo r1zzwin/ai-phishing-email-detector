@@ -8,6 +8,12 @@
   and phishing emails can be missed.
 </div>
 
+{% if save_error %}
+  <div class="notice warn">This scan could not be saved to history, but the result below is still valid.</div>
+{% elif scan_id %}
+  <p class="muted">Saved to <a href="{{ url_for('main.history_detail', scan_id=scan_id) }}">history</a>.</p>
+{% endif %}
+
 <section class="card">
   <p><strong>Sender:</strong> {{ email.sender }}</p>
   <p><strong>Subject:</strong> {{ email.subject }}</p>

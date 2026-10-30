@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Scan {{ scan.id }} - Phishing Email Detector{% endblock %}
+{% block content %}
+<h1>Saved scan</h1>
+
+<div class="notice warn"><strong>Advisory only.</strong> This result is not a guarantee.</div>
+
+<section class="card">
+  <p><strong>Time:</strong> {{ scan.created_at[:16]|replace("T", " ") }} UTC</p>
+  <p><strong>Sender:</strong> {{ scan.sender }}</p>
+  <p><strong>Subject:</strong> {{ scan.subject }}</p>
+</section>
+
+<section class="card score {{ scan.category|lower }}">
+  <div class="score-number">{{ scan.score }}<span>/100</span></div>
+  <div>
+    <div class="label">Risk score</div>
+    <div class="category">{{ scan.category }}</div>
+    {% if scan.ai_verdict %}<div class="muted">AI verdict: {{ scan.ai_verdict }}</div>{% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h2>How the score was calculated</h2>
+  <p>{{ scan.report.explanation }}</p>
+  {% if scan.report.ai_error %}
+    <p class="notice warn">AI step was unavailable: {{ scan.report.ai_error }}</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Rule-based indicators</h2>
+  {% if scan.report.rule_findings %}
+    <ul>
+      {% for f in scan.report.rule_findings %}
+        <li><strong>{{ f.name }}</strong> (+{{ f.points }})<br>
+            <span class="muted">Evidence: {{ f.evidence }}</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No rule-based warning signs were found.</p>
+  {% endif %}
+</section>
+
+{% if scan.report.ai %}
+<section class="card">
+  <h2>AI findings</h2>
+  {% if scan.report.ai.reasons %}
+    <h3>Reasons</h3>
+    <ul>{% for r in scan.report.ai.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if scan.report.ai.evidence %}
+    <h3>Evidence from the email</h3>
+    <ul>{% for e in scan.report.ai.evidence %}<li>{{ e }}</li>{% endfor %}</ul>
+  {% endif %}
+  {% if scan.report.ai.next_steps %}
+    <h3>Suggested next steps</h3>
+    <ul>{% for s in scan.report.ai.next_steps %}<li>{{ s }}</li>{% endfor %}</ul>
+  {% endif %}
+</section>
+{% endif %}
+
+<p><a class="button" href="{{ url_for('main.history') }}">Back to history</a></p>
+{% endblock %}

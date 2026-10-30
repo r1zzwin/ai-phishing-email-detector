@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}History - Phishing Email Detector{% endblock %}
+{% block content %}
+<h1>Scan history</h1>
+
+{% if db_error %}
+  <div class="notice error" role="alert">History could not be loaded. Check that the database file is available.</div>
+{% endif %}
+
+<form class="filters" method="get" action="{{ url_for('main.history') }}">
+  <div>
+    <label for="q">Search sender or subject</label>
+    <input id="q" name="q" maxlength="100" value="{{ q }}">
+  </div>
+  <div>
+    <label for="category">Category</label>
+    <select id="category" name="category">
+      <option value="">All</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit">Filter</button>
+  <a href="{{ url_for('main.history') }}">Reset</a>
+</form>
+
+{% if scans %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Time (UTC)</th><th>Sender</th><th>Subject</th><th>Score</th><th>Category</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for s in scans %}
+        <tr>
+          <td>{{ s.created_at[:16]|replace("T", " ") }}</td>
+          <td>{{ s.sender }}</td>
+          <td>{{ s.subject }}</td>
+          <td>{{ s.score }}</td>
+          <td><span class="pill {{ s.category|lower }}">{{ s.category }}</span></td>
+          <td class="row-actions">
+            <a href="{{ url_for('main.history_detail', scan_id=s.id) }}">View</a>
+            <form method="post" action="{{ url_for('main.delete_scan', scan_id=s.id) }}"
+                  data-confirm="Delete this scan? This cannot be undone.">
+              <button type="submit" class="danger small">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <form method="post" action="{{ url_for('main.clear_history') }}"
+        data-confirm="Delete ALL scan history? This cannot be undone.">
+    <button type="submit" class="danger">Clear all history</button>
+  </form>
+{% elif not db_error %}
+  {% if q or category %}
+    <p>No scans match your filter.</p>
+  {% else %}
+    <p>No scans yet. <a href="{{ url_for('main.index') }}">Analyze an email</a> to get started.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
