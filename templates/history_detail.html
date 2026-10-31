@@ -62,3 +62,12 @@
 
 <p><a class="button" href="{{ url_for('main.history') }}">Back to history</a></p>
 {% endblock %}
+<section class="card">
+  <h2>Export this report</h2>
+  <p class="muted">The report has the sender, subject, score and findings. The email body is never stored or exported.</p>
+  <a class="button" href="{{ url_for('main.export_scan', scan_id=scan.id, fmt='txt') }}">Download text</a>
+  <a class="button" href="{{ url_for('main.export_scan', scan_id=scan.id, fmt='json') }}">Download JSON</a>
+  <button type="button" class="secondary" id="copy-report">Copy report</button>
+  <span id="copy-status" class="muted" role="status"></span>
+  <textarea id="report-text" hidden readonly>{{ report_text }}</textarea>
+</section>

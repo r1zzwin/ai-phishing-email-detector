@@ -56,3 +56,5 @@ th { background: #eef1f6; font-size: .85rem; }
 .pill.critical { background: #b91c1c; }
 button.danger { background: #b91c1c; }
 button.small { margin: 0 0 0 8px; padding: 4px 10px; font-size: .85rem; }
+.button { margin-right: 8px; }
+button.secondary { background: #fff; color: var(--brand); border: 2px solid var(--brand); }

@@ -7,10 +7,14 @@ def _clean(value):
     return (value or "").replace("\x00", "").strip()
 
 
+def _single_line(value):
+    return " ".join(_clean(value).split())
+
+
 def validate_input(form):
     data = {
-        "sender": _clean(form.get("sender")),
-        "subject": _clean(form.get("subject")),
+        "sender": _single_line(form.get("sender")),
+        "subject": _single_line(form.get("subject")),
         "body": _clean(form.get("body")),
     }
     errors = []

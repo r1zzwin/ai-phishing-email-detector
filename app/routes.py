@@ -2,11 +2,11 @@ import logging
 import sqlite3
 
 from flask import (
-    Blueprint, abort, current_app, flash, redirect,
+    Blueprint, Response, abort, current_app, flash, redirect,
     render_template, request, url_for,
 )
 
-from . import analyzer, db, ollama_client
+from . import analyzer, db, ollama_client, report
 from .validation import validate_input
 
 bp = Blueprint("main", __name__)
@@ -79,7 +79,36 @@ def history_detail(scan_id):
         return redirect(url_for("main.history"))
     if scan is None:
         abort(404)
-    return render_template("history_detail.html", scan=scan)
+    return render_template(
+        "history_detail.html", scan=scan, report_text=report.report_to_text(scan)
+    )
+
+
+@bp.route("/history/<int:scan_id>/export/<fmt>")
+def export_scan(scan_id, fmt):
+    if fmt not in ("txt", "json"):
+        abort(404)
+    try:
+        scan = db.get_scan(_db_path(), scan_id)
+    except sqlite3.Error:
+        logger.warning("Could not load scan for export")
+        flash("The report could not be created.")
+        return redirect(url_for("main.history"))
+    if scan is None:
+        abort(404)
+
+    if fmt == "json":
+        body, mimetype = report.report_to_json(scan), "application/json"
+    else:
+        body, mimetype = report.report_to_text(scan), "text/plain"
+
+    return Response(
+        body,
+        mimetype=mimetype,
+        headers={
+            "Content-Disposition": f"attachment; filename=phishing-scan-{scan_id}.{fmt}"
+        },
+    )
 
 
 @bp.route("/history/<int:scan_id>/delete", methods=["POST"])
